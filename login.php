@@ -1,3 +1,44 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Load user data from JSON file
+    $users = json_decode(file_get_contents('users.json'), true);
+
+    // Check if the submitted email ends with "@bcit.ca"
+    if (strpos($email, '@bcit.ca') !== false) {
+        // Set a "flag" value in session data to indicate authentication
+        $_SESSION['authenticated'] = true;
+    }
+
+    // Validate login credentials
+    $authenticated = false;
+    foreach ($users['users'] as $user) {
+        if ($user['email'] === $email && $user['password'] === $password) {
+            $authenticated = true;
+            break;
+        }
+    }
+
+    if ($authenticated) {
+        // Redirect to restricted page if authenticated
+        header('Location: restricted.php');
+        exit;
+    } else {
+        // Invalid credentials, redirect to index.php
+        header('Location: index.php');
+        exit;
+    }
+}
+?>
+<!-- Your HTML login form goes here -->
+
+
+
+
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-white">
 

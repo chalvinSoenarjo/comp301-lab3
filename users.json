@@ -1,0 +1,13 @@
+{
+    "users": [
+        {
+            "email": "john@bcit.ca",
+            "telephone": "123456891"
+        },
+        {
+            "email": "donny@bcit.ca",
+            "telephone": "12",
+            "password": "donny123"
+        }
+    ]
+}

@@ -1,31 +1,51 @@
 <?php
 session_start();
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $errors = false;
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $errors = [];
+
+    // Validate input fields (e.g., check for empty fields)
     if (empty($_POST['email'])) {
-        $_SESSION['email_error'] = 'An email is required.';
-        $errors = true;
+        $errors[] = 'An email is required.';
     }
     if (empty($_POST['password'])) {
-        $_SESSION['password_error'] = 'A password is required.';
-        $errors = true;
-    }
-    if (empty($_POST['telephone'])) {
-        $_SESSION['telephone_error'] = 'A telephone number is required.';
-        $errors = true;
+        $errors[] = 'A password is required.';
     }
 
-    if ($errors) {
-        $_SESSION['email'] = $_POST['email'];
-        $_SESSION['telephone'] = $_POST['telephone'];
-        header('Location: register.php');
-    } else {
+    // Add more validation rules as needed
+
+    if (empty($errors)) {
+        // No validation errors, proceed to store user
+        $userData = [
+            'email' => $_POST['email'],
+            'telephone' => $_POST['telephone'],
+            'password' => $_POST['password'], // Include the password field
+            // Add more fields as needed
+        ];
+
+        // Load existing users from JSON file
+        $users = json_decode(file_get_contents('users.json'), true);
+
+        // Add new user data to the array
+        $users['users'][] = $userData;
+
+        // Save updated user data back to JSON file
+        file_put_contents('users.json', json_encode($users, JSON_PRETTY_PRINT));
+
+        // Redirect or display success message
         header('Location: login.php');
+        exit;
+    } else {
+        // There are validation errors, store them in session for display
+        $_SESSION['errors'] = $errors;
+        $_SESSION['input'] = $_POST; // Store user input to repopulate form fields
+        header('Location: register.php');
+        exit;
     }
-    exit;
 }
 ?>
+<!-- Your HTML form goes here -->
+
 
 <!doctype html>
 <html lang="en" class="h-full bg-white">
